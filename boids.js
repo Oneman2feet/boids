@@ -65,6 +65,14 @@ class Vector {
     const dy = a.y - b.y;
     return dx*dx + dy*dy;
   }
+
+  // Angle in radians needed to rotate from a to b
+  static rotationBetween(a, b) {
+    var diff = b.angle-a.angle;
+    if (diff >  Math.PI) return diff - 2*Math.PI;
+    if (diff < -Math.PI) return diff + 2*Math.PI;
+    return diff;
+  }
 }
 
 class Boid {
@@ -98,8 +106,11 @@ class Boid {
   }
 
   steerTowards(otherHeading, speed) {
-    var newHeading = this.nextHeading.lerp(otherHeading, speed);
-    this.nextDirection = newHeading.direction;
+    var angle = Vector.rotationBetween(this.nextHeading,otherHeading);
+    if (Math.abs(angle) < speed) this.steer(angle);
+    else {
+      this.steer(Math.sign(angle)*speed);
+    }
   }
 
   fly(distance) {
