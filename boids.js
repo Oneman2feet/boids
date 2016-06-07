@@ -1,10 +1,12 @@
+// TODO: add obstacles, add general path following, add sidescrolling, minnows, split flock and remerge
+
 var vue = new Vue({
   el: '#controls',
   data: {
     variables: [
-      { text: "Separation", reactivity: 50, sensitivity: 100 },
+      { text: "Separation", reactivity: 30, sensitivity:  25 },
       { text:  "Alignment", reactivity:  3, sensitivity: 100 },
-      { text:   "Cohesion", reactivity: 22, sensitivity: 100 }
+      { text:   "Cohesion", reactivity: 30, sensitivity: 200 }
     ]
   }
 });
@@ -201,6 +203,8 @@ class Boid {
     this.separate( this.neighborsWithin(vue.variables[0].sensitivity), vue.variables[0].reactivity);
     this.align(    this.neighborsWithin(vue.variables[1].sensitivity), vue.variables[1].reactivity);
     this.cohese(   this.neighborsWithin(vue.variables[2].sensitivity), vue.variables[2].reactivity);
+    // TODO: add some amount of random flying?
+    // TODO: add speed dependant on amount of turn?
     this.fly(3);
   }
 

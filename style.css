@@ -3,5 +3,16 @@ html, body, #svg { width: 100%; height: 100%; }
 
 #controls { position: fixed; top: 0; right: 0; background: rgba(100,100,100,0.2); padding: 10px; }
 .variable { width: 100px; display: inline-block; text-align: center; }
-.aspect { width: 30px; display: inline-block; }
-.aspect input { width: 30px; height: 150px; transform: rotateZ(270deg); }
+.aspect { width: 30px; height: 150px; display: inline-block; }
+.aspect input {
+  position: relative;
+  top: 50px;    /* height/2         */
+  right: 35px;  /* (height-width)/2 */
+  width: 100px; /* height           */
+  height: 30px; /* width            */
+  transform: rotateZ(270deg);
+}
+.aspect p {
+  position: relative;
+  top: 100px; /* height */
+}

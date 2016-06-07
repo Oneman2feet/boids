@@ -16,7 +16,7 @@
         <p>{{variable.reactivity}}</p>
       </div>
       <div class="aspect" id="sensitivity">
-        <input type="range" v-model="variable.sensitivity"/>
+        <input type="range" v-model="variable.sensitivity" min=1 max=500 />
         <p>{{variable.sensitivity}}</p>
       </div>
     </div>
