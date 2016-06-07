@@ -1,4 +1,6 @@
-// TODO: add obstacles, add general path following, add sidescrolling, minnows, split flock and remerge
+// TODO: draw trails with color, better sprite, animation
+// add obstacles, add general path following
+// add sidescrolling, minnows, split flock and remerge
 
 var vue = new Vue({
   el: '#controls',
