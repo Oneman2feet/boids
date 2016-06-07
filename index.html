@@ -4,9 +4,23 @@
   <title>Boids</title>
   <link type="text/css" rel="stylesheet" href="style.css">
   <script src="snap.svg-min.js"></script>
+  <script src="vue.js"></script>
 </head>
 <body>
   <svg id="svg"></svg>
+  <div id="controls">
+    <div class="variable" v-for="variable in variables" v-bind:id="variable.text">
+      <p>{{variable.text}}</p>
+      <div class="aspect" id="reactivity">
+        <input type="range" v-model="variable.reactivity"/>
+        <p>{{variable.reactivity}}</p>
+      </div>
+      <div class="aspect" id="sensitivity">
+        <input type="range" v-model="variable.sensitivity"/>
+        <p>{{variable.sensitivity}}</p>
+      </div>
+    </div>
+  </div>
   <script src="boids.js"></script>
 </body>
 </html>

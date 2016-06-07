@@ -1,3 +1,14 @@
+var vue = new Vue({
+  el: '#controls',
+  data: {
+    variables: [
+      { text: "Separation", reactivity: 50, sensitivity: 100 },
+      { text:  "Alignment", reactivity:  3, sensitivity: 100 },
+      { text:   "Cohesion", reactivity: 22, sensitivity: 100 }
+    ]
+  }
+});
+
 var s = Snap("#svg");
 var fps = 60;
 var boids = [];
@@ -68,6 +79,7 @@ class Vector {
 
   // Angle in radians needed to rotate from a to b
   static rotationBetween(a, b) {
+    if (a.angle===NaN || b.angle===NaN) return 0; // cover zero vector
     var diff = b.angle-a.angle;
     if (diff >  Math.PI) return diff - 2*Math.PI;
     if (diff < -Math.PI) return diff + 2*Math.PI;
@@ -76,7 +88,6 @@ class Vector {
 }
 
 class Boid {
-
   constructor(x, y, dir=0, scale=4) {
     this.x = this.nextX = x;
     this.y = this.nextY = y;
@@ -108,9 +119,7 @@ class Boid {
   steerTowards(otherHeading, speed) {
     var angle = Vector.rotationBetween(this.nextHeading,otherHeading);
     if (Math.abs(angle) < speed) this.steer(angle);
-    else {
-      this.steer(Math.sign(angle)*speed);
-    }
+    else this.steer(Math.sign(angle)*speed);
   }
 
   fly(distance) {
@@ -144,6 +153,7 @@ class Boid {
 
   // TODO: optimize with AABB
   // TODO: remove self?
+  // account for world wrap
   neighborsWithin(distance) {
     var that = this;
     return boids.filter(function(boid) {
@@ -152,7 +162,7 @@ class Boid {
   }
 
   // Separation
-  separate(neighbors) {
+  separate(neighbors, reactivity) {
     var opposingDirection = neighbors.reduce(function(acc,el){
       acc.add(el.position);
       return acc;
@@ -160,38 +170,38 @@ class Boid {
     opposingDirection.scale(1 / neighbors.length);
     opposingDirection.sub(this.position);
     opposingDirection.scale(-1);
-    this.steerTowards(opposingDirection, 0.5);
+    this.steerTowards(opposingDirection, reactivity / 1000);
   }
 
   // Alignment
-  align(neighbors) {
+  align(neighbors, reactivity) {
     var avgHeading = neighbors.reduce(function(acc,el){
       acc.add(el.heading);
       return acc;
     }, new Vector());
     avgHeading.scale(1 / neighbors.length);
     avgHeading.sub(this.position);
-    this.steerTowards(avgHeading, 0.5);
+    this.steerTowards(avgHeading, reactivity / 10000);
   }
 
   // Cohesion
-  cohese(neighbors) {
+  cohese(neighbors, reactivity) {
     var towardsAvgPos = neighbors.reduce(function(acc,el){
       acc.add(el.position);
       return acc;
     }, new Vector());
     towardsAvgPos.scale(1 / neighbors.length);
     towardsAvgPos.sub(this.position);
-    this.steerTowards(towardsAvgPos, 0.5);
+    this.steerTowards(towardsAvgPos, reactivity / 1000);
   }
 
   update() {
     // TODO: optimize by doing steps in order of decreasing radius
     // and using previous neighbors list for filter of next step
-    this.separate(this.neighborsWithin(50));
-    this.align(this.neighborsWithin(100));
-    this.cohese(this.neighborsWithin(200));
-    this.fly(1);
+    this.separate( this.neighborsWithin(vue.variables[0].sensitivity), vue.variables[0].reactivity);
+    this.align(    this.neighborsWithin(vue.variables[1].sensitivity), vue.variables[1].reactivity);
+    this.cohese(   this.neighborsWithin(vue.variables[2].sensitivity), vue.variables[2].reactivity);
+    this.fly(3);
   }
 
   draw() {
@@ -204,10 +214,11 @@ class Boid {
 }
 
 function create() {
-  for (var i=0; i<10; i++) {
+  rect = s.node.getBoundingClientRect();
+  for (var i=0; i<100; i++) {
     boids.push(new Boid(
-      Math.random() * 300,
-      Math.random() * 200,
+      Math.random() * rect.width,
+      Math.random() * rect.height,
       Math.random() * 2 * Math.PI));
   }
 }
